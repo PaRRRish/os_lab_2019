@@ -6,9 +6,8 @@
 
 int Sum(int* array,int begin,int end) {
   int sum = 0;
-  // TODO: your code here 
-  
-  for(int i=begin; i<=end;i++)
+  int i;
+  for(i=begin; i<=end;i++)
   {
       
 	sum+=array[i];
