@@ -79,7 +79,7 @@ void zxy()
 
 
 int main() {
-pthread_t thread1, thread2;
+pthread_t thread1, thread2, thread3;
 
 if (pthread_create(&thread1, NULL, (void *)xyz, NULL) != 0) 
 {
@@ -93,7 +93,7 @@ if (pthread_create(&thread2, NULL, (void *)yzx, NULL) != 0)
 	exit(1);
 }
 
-if (pthread_create(&thread2, NULL, (void *)zxy, NULL) != 0)
+if (pthread_create(&thread3, NULL, (void *)zxy, NULL) != 0)
 {
 	perror("pthread_create");
 	exit(1);
@@ -111,7 +111,7 @@ if (pthread_join(thread2, NULL) != 0)
 	exit(1);
 }
 
-if (pthread_join(thread2, NULL) != 0) 
+if (pthread_join(thread3, NULL) != 0) 
 {
 	perror("pthread_join");
 	exit(1);
