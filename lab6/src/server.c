@@ -31,7 +31,7 @@ uint64_t Factorial(const struct FactorialArgs *args) {
   for (i = (*args).begin; i < (*args).end; i++) 
     ans *= i;
   ans %= (*args).mod;
-  printf("%d (%lu - %lu) result: %lu\n", port, (*args).begin, (*args).end-1, ans);
+ // printf("%d (%lu - %lu) result: %lu\n", port, (*args).begin, (*args).end-1, ans);
   return ans;
 }
 
