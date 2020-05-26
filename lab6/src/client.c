@@ -203,7 +203,6 @@ int main(int argc, char **argv) {
     args[i].to_server = *(to+i);
     args[i].begin = (k / servers_num) * i + 1;
     args[i].end = (k / servers_num) * (i + 1);   
-    printf("%d\n", args[i].end);
     args[i].mod = mod;
     if (pthread_create(&threads[i], NULL, (void *)ParallelServer, (void *)(args+i))) {
         printf("Error: pthread_create failed!\n");
