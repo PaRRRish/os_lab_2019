@@ -14,6 +14,7 @@
 //#define BUFSIZE 1024
 #define SADDR struct sockaddr
 #define SLEN sizeof(struct sockaddr_in)
+#define SIZE sizeof(struct sockaddr_in)
 
 int main(int argc, char **argv) {
   int sockfd, n;
@@ -79,8 +80,13 @@ int main(int argc, char **argv) {
   }
   servaddr.sin_port = htons(SERV_PORT);
 
-  if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-    perror("socket problem (SOCK_DGRAM)");
+  if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    perror("socket problem (SOCK_STREAM)");
+    exit(1);
+  }
+
+  if (connect(sockfd, (SADDR *)&servaddr, SIZE) < 0) {
+    perror("connect problem (SOCK_STREAM)");
     exit(1);
   }
 
@@ -89,14 +95,11 @@ int main(int argc, char **argv) {
   while ((n = read(0, sendline, BUFSIZE)) > 0) {
     //соединение не обязательно
     if (sendto(sockfd, sendline, n, 0, (SADDR *)&servaddr, SLEN) == -1) {
-      perror("sendto problem (SOCK_DGRAM)");
+      perror("sendto problem (SOCK_STREAM)");
       exit(1);
     }
     sleep(1);
 
-    /*виснет, если не получили ответ от сервера
-    //могут использоваться для получения данных, независимо от того, 
-    //является ли сокет ориентированным на соединения или нет.
    
     if (recvfrom(sockfd, recvline, BUFSIZE, 0, NULL, NULL) == -1) {
       perror("recvfrom problem (SOCK_DGRAM)");
@@ -104,7 +107,7 @@ int main(int argc, char **argv) {
     }
     //ОТВЕТ
     printf("REPLY FROM SERVER= %s\n", recvline);
-    */
+   
     
   }
 
