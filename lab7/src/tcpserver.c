@@ -195,7 +195,7 @@ pipe(pipeEnds);
     int missing = 0;
     while (true) {
       read(pipeEnds[0], &missing, sizeof(int));
-       printf("mi %u  \n", missing);
+       //printf("mi %u  \n", missing);
       if (write(cfd, &missing, sizeof(missing)) < 0) {
         perror("write problem");
         exit(1);

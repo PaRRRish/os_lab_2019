@@ -101,29 +101,11 @@ int main(int argc, char **argv) {
     exit(1);
   }
   printf("PORT %u  \n", response);
-  //while ((n = read(0, &response, BUFSIZE)) > 0) {
-    //соединение не обязательно
-   /* if (sendto(sockfd, sendline, n, 0, (SADDR *)&servaddr, SLEN) == -1) {
-      perror("sendto problem (SOCK_STREAM)");
-      exit(1);
-    }
-    sleep(1);
-
-   
-    if (recvfrom(sockfd, recvline, BUFSIZE, 0, NULL, NULL) == -1) {
-      perror("recvfrom problem (SOCK_DGRAM)");
-      exit(1);
-    }
-    //ОТВЕТ
-    printf("REPLY FROM SERVER= %s\n", recvline);
-   
-    
-  }*/
-  
+ 
   int  PORT = response;
   int fd;
   struct sockaddr_in servaddr1;
- // struct sockaddr_in cliaddr;
+
   memset(&servaddr1, 0, sizeof(servaddr1));
   servaddr1.sin_family = AF_INET;
   servaddr1.sin_port = htons(PORT);
@@ -159,11 +141,11 @@ int main(int argc, char **argv) {
     int ad = 0;
 
     while(1) {
-      if (read(fd, &response, sizeof(response)) < 0) {
+      if (read(sockfd, &response, sizeof(response)) < 0) {
         fprintf(stderr, "Recieve failed\n");
         exit(1);
       }
-      printf("mi %u  \n", response);
+     // printf("mi %u  \n", response);
       if(response == -1) break;
       if (sendto(fd, &response, sizeof(response), 0, (SADDR *)&servaddr1,
                  sizeof(servaddr1)) == -1) {
