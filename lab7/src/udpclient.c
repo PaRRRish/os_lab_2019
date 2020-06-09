@@ -1,7 +1,6 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <arpa/inet.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -69,32 +68,42 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  char sendline[BUFSIZE], recvline[BUFSIZE + 1];
+  char  recvline[BUFSIZE + 1];
 
-  
+  if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    perror("socket problem");
+    exit(1);
+  }
+
   memset(&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   if (inet_pton(AF_INET, IP, &servaddr.sin_addr) < 0) {
-    perror("inet_pton problem (SOCK_DGRAM)");
+    perror("inet_pton problem ");
     exit(1);
   }
+
   servaddr.sin_port = htons(SERV_PORT);
 
-  if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-    perror("socket problem (SOCK_STREAM)");
-    exit(1);
-  }
-
   if (connect(sockfd, (SADDR *)&servaddr, SIZE) < 0) {
-    perror("connect problem (SOCK_STREAM)");
+    perror("connect problem ");
     exit(1);
   }
 
-  write(1, "Enter string: \n", 13);
+  //write(1, "Enter string: \n", 13);
+   if (write(sockfd, &BUFSIZE, sizeof(int)) < 0) {
+    perror("write");
+    exit(1);
+  }
 
-  while ((n = read(0, sendline, BUFSIZE)) > 0) {
+  int response = 0;
+  if (read(sockfd, &response, sizeof(int)) < 0) {
+    fprintf(stderr, "Recieve failed\n");
+    exit(1);
+  }
+  printf("PORT %u  \n", response);
+  //while ((n = read(0, &response, BUFSIZE)) > 0) {
     //соединение не обязательно
-    if (sendto(sockfd, sendline, n, 0, (SADDR *)&servaddr, SLEN) == -1) {
+   /* if (sendto(sockfd, sendline, n, 0, (SADDR *)&servaddr, SLEN) == -1) {
       perror("sendto problem (SOCK_STREAM)");
       exit(1);
     }
@@ -109,8 +118,63 @@ int main(int argc, char **argv) {
     printf("REPLY FROM SERVER= %s\n", recvline);
    
     
-  }
+  }*/
+  
+  int  PORT = response;
+  int fd;
+  struct sockaddr_in servaddr1;
+ // struct sockaddr_in cliaddr;
+  memset(&servaddr1, 0, sizeof(servaddr1));
+  servaddr1.sin_family = AF_INET;
+  servaddr1.sin_port = htons(PORT);
 
+  if (inet_pton(AF_INET, argv[1], &servaddr1.sin_addr) < 0) {
+    perror("inet_pton problem");
+    exit(1);
+  }
+  if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    perror("socket problem");
+    exit(1);
+  }
+  n=BUFSIZE;
  
+  for (int i = 1; i < n + 1; i++) {
+    if (sendto(fd, &i, sizeof(i), 0, (struct sockaddr *)&servaddr1,
+               sizeof(servaddr1)) == -1) {
+      perror("sendto problem1");
+      exit(1);
+    }
+  }
+  
+  int i = 0;
+  if (sendto(fd, &i, sizeof(i), 0, (SADDR *)&servaddr1,
+             sizeof(servaddr1)) == -1) {
+    perror("sendto problem2");
+    exit(1);
+  }
+  sleep(1);
+  
+
+    response = -1;
+    int ad = 0;
+
+    while(1) {
+      if (read(fd, &response, sizeof(response)) < 0) {
+        fprintf(stderr, "Recieve failed\n");
+        exit(1);
+      }
+      printf("mi %u  \n", response);
+      if(response == -1) break;
+      if (sendto(fd, &response, sizeof(response), 0, (SADDR *)&servaddr1,
+                 sizeof(servaddr1)) == -1) {
+        perror("sendto problem3");
+        exit(1);
+      }
+    }
+
   close(sockfd);
+  close(fd);
+  exit(0);
+
 }
+
